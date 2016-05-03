@@ -8,7 +8,7 @@ class MyNum {
  public:
   MyNum();
   MyNum(s_t);
-  unsigned int size() const  {return value.size();}
+  unsigned int size() const  {return s;}
   const char &operator[](int i) const;
 
   s_t getNum() const;
@@ -18,7 +18,8 @@ class MyNum {
 
 
  private:
-  std::vector<char> value;
+  char value[6];
+  char s;
 };
 
 inline bool operator<=(const MyNum& n1, const MyNum& n2) {
@@ -27,10 +28,12 @@ inline bool operator<=(const MyNum& n1, const MyNum& n2) {
   if (n1.size()<n2.size()) 
     return true;
   for (unsigned int i=n1.size();i>0;i--) {
-    if (n2[i]<n1[i])
+    if (n2[i-1]<n1[i-1])
       return false;
   }
   return true;
 }
+
+char checkSize(s_t);
 
 #endif

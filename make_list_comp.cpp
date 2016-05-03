@@ -8,7 +8,6 @@
 #include <ctime>
 
 int main(int argc,char* argv[]) {
-
   srand(time(NULL));
   assert(argc>2);
   std::ofstream out_str(argv[1]);
