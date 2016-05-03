@@ -5,20 +5,20 @@
 #include <cmath>
 #include <algorithm>
 #include "my_num.h"
+#include <ctime>
 
 int main(int argc,char* argv[]) {
 
-  return 0;
   srand(time(NULL));
   assert(argc>2);
   std::ofstream out_str(argv[1]);
-  s_t N = pow(2,atoi(argv[2]));
+  s_t N = (s_t)ceil(pow(2,atoi(argv[2])));
   double alpha = atof(argv[3]);
-  s_t N_sorted = ceil(alpha*N);
+  s_t N_sorted = (s_t)ceil(alpha*N);
   s_t N_unsorted = N-N_sorted;
   int* indices = new int[N_unsorted];
   for (s_t i=0;i<N_unsorted;i++) {
-    indices[i].setNum(rand()%(N_sorted+1));
+    indices[i] = (rand()%(N_sorted+1));
   }
   std::sort(indices,indices+N_unsorted);
   s_t cur=0;

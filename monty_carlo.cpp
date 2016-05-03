@@ -5,6 +5,7 @@
 #include <cmath>
 #include <cstdlib>
 #include <algorithm>
+#include <ctime>
 s_t nChoosek( s_t n, s_t k )
 {
     if (k > n) return 0;

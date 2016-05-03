@@ -1,5 +1,7 @@
 #include "my_num.h"
 #include <cmath>
+#include <iostream>
+#include <string>
 MyNum::MyNum() {setNum(0);}
 
 MyNum::MyNum(s_t num) {
@@ -13,7 +15,7 @@ const char &MyNum::operator[](int i) const{
 s_t MyNum::getNum() const {
   s_t acc=0;
   for (unsigned int i=0;i<value.size();i++) 
-    acc+=pow(256,i)*value[i];
+    acc+=(s_t)ceil(pow(256,i))*value[i];
   return acc;
 }
 void MyNum::setNum(s_t num) {
