@@ -3,13 +3,13 @@
 #include <vector>
 #include <iostream>
 typedef unsigned long long int s_t;
-
+typedef unsigned short store_t;
 class MyNum {
  public:
   MyNum();
   MyNum(s_t);
   unsigned int size() const  {return s;}
-  const char &operator[](int i) const;
+  const store_t &operator[](int i) const;
 
   s_t getNum() const;
   void setNum(s_t);
@@ -18,8 +18,8 @@ class MyNum {
 
 
  private:
-  char value[6];
-  char s;
+  store_t value[3];
+  unsigned short s;
 };
 
 inline bool operator<=(const MyNum& n1, const MyNum& n2) {
@@ -27,7 +27,7 @@ inline bool operator<=(const MyNum& n1, const MyNum& n2) {
     return false;
   if (n1.size()<n2.size()) 
     return true;
-  for (unsigned int i=n1.size();i>0;i--) {
+  for (unsigned short i=n1.size();i>0;i--) {
     if (n2[i-1]<n1[i-1])
       return false;
   }
