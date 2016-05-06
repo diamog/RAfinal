@@ -19,7 +19,7 @@ s_t nChoosek( s_t n, s_t k )
     }
     return result;
 }
-s_t myincreasingsseq(std::vector<s_t>& nums, std::vector<s_t>& indices) {
+s_t myincreasingsseq(std::vector<store_t>& nums, std::vector<s_t>& indices) {
   std::vector<s_t> L;
   s_t max=1;
   s_t l = indices.size();
@@ -74,7 +74,7 @@ s_t longestIncreasingSubsequence(std::vector<s_t> nums, s_t* indices, s_t l) {
 }
 */
 
-bool testSubsequence(std::vector<s_t>& nums, s_t l, float alpha) {
+bool testSubsequence(std::vector<store_t>& nums, s_t l, float alpha) {
   std::vector<s_t> indices;
 
   for (s_t i=0;i<l;i++) {
@@ -102,9 +102,8 @@ int main(int argc, char* argv[]) {
   std::cout<<"Computing p* took "<<(std::clock()-start_ps)/(double)CLOCKS_PER_SEC<<"seconds\n";
 
   std::clock_t start_reading = std::clock();
-  //MyNum num;
   s_t num;
-  std::vector<s_t> numbers;
+  std::vector<store_t> numbers;
   while (in_str>>num) {
     numbers.push_back(num);
   }

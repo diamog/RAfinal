@@ -22,12 +22,12 @@ int main(int argc,char* argv[]) {
   s_t cur=0;
   for (s_t i=0;i<N_sorted;i++) {
     while (cur<N_unsorted&&indices[cur]<i) {
-      out_str<<N_sorted<<'\n';
+      out_str<<(int)log(N_sorted)+1<<'\n';
       //      MyNum num(N_sorted);
       //      num.write(out_str);
       cur++;
     }
-    out_str<<i<<'\n';
+    out_str<<(int)log(i+1)<<'\n';
     //    MyNum num(i);
     //num.write(out_str);
   }
