@@ -7,7 +7,10 @@
 #include <algorithm>
 #include "my_num.h"
 #include <mpi.h>
-
+void phi() {
+  static int num=0;
+  //  std::cout<<"hi"<<num++<<std::endl;
+}
 s_t nChoosek( s_t n, s_t k )
 {
     if (k > n) return 0;
@@ -22,7 +25,7 @@ s_t nChoosek( s_t n, s_t k )
     return result;
 }
 int findTarget(std::vector<s_t> ends,s_t& index) {
-  for (int i=0;i<ends.size();i++) {
+  for (unsigned int i=0;i<ends.size();i++) {
     if (index<ends[i]) {
       if (i==0)
         return i+1;
@@ -53,19 +56,27 @@ s_t myincreasingsseq(std::vector<store_t>& nums) {
 bool testSubsequence(std::vector<s_t>& ends, s_t l, float alpha) {
   std::vector<s_t> indices;
   s_t last = ends[ends.size()-1];
+  phi();
   for (s_t i=0;i<l;i++) {
     indices.push_back(rand()%(last));
   }
+  phi();
   std::sort(indices.begin(),indices.end());
+  phi();
   std::vector<store_t> nums(l);
-  for (int i=0;i<l;i++) {
-    s_t index = indices[i];
+  for (unsigned int i=0;i<l;i++) {
     int target = findTarget(ends,indices[i]);
-    MPI_Send(&(indices[i]),1,MPI_UNSIGNED_LONG_LONG,target,0,MPI_COMM_WORLD);
+    //    std::cout<<target<<' '<<indices[i]<<std::endl;
+    long long int num = indices[i];
+    int err = MPI_Send(&num,1,MPI_LONG_LONG,target,0,MPI_COMM_WORLD);
+    //    std::cout<<err<<std::endl;
     MPI_Recv(&(nums[i]),1,MPI_UNSIGNED_SHORT,target,MPI_ANY_TAG,MPI_COMM_WORLD,
              MPI_STATUS_IGNORE);
+    phi();
   }
+  phi();
   s_t L = myincreasingsseq(nums);
+  phi();
   return L>=ceil(alpha*l);
 }
 
@@ -83,7 +94,6 @@ int main(int argc,char* argv[]) {
   s_t N = pow(2,atoi(argv[1]));
   double alpha_in = atof(argv[2]);
   s_t N_sorted = ceil(alpha_in*N);
-  s_t N_pernode = N/size;
   s_t N_spernode = N_sorted/(size-1)+1;
   s_t N_unsorted = N-N_sorted;
 
@@ -125,7 +135,7 @@ int main(int argc,char* argv[]) {
   
     //continuously run tests until finished
     float alpha;
-    int l;
+    unsigned int l;
     std::cout<<"Input l(0 to end): ";
     std::cin>>l;
     while (l!=0) {
@@ -146,8 +156,11 @@ int main(int argc,char* argv[]) {
       std::clock_t start_running = std::clock();
       unsigned int m = 100000;
       unsigned int worked=0;
-      for (int i=0;i<m;i++) {
+      phi();
+      for (unsigned int i=0;i<m;i++) {
+        std::cout<<"Starting "<<i<<'\n';
         worked+=testSubsequence(ends,l,alpha);
+        phi();
       }
       double p = worked*1.0/m;
       std::cout<<"p = "<<p<<'\n';
@@ -164,7 +177,7 @@ int main(int argc,char* argv[]) {
     }
 
     for (int i=1;i<size;i++){
-      int n1=-1;
+      long long int n1=-1;
       MPI_Send(&n1,1,MPI_LONG_LONG,i,0,MPI_COMM_WORLD);
     }
   
@@ -192,10 +205,15 @@ int main(int argc,char* argv[]) {
     delete [] indices;
 
     while (true) {
-      long long int num;
-      MPI_Recv(&num,1,MPI_LONG_LONG,0,MPI_ANY_TAG,MPI_COMM_WORLD,MPI_STATUS_IGNORE);
+      long long int num=0;
+      int err =MPI_Recv(&num,1,MPI_LONG_LONG,0,0,MPI_COMM_WORLD,MPI_STATUS_IGNORE);
+      //      std::cout<<rank<<": "<<err<<std::endl;
+      //      std::cout<<num<<std::endl;
       if (num==-1)
         break;
+      if (num>=(long long int)numbers.size())
+        printf("%lld has been requested off of part %d but size is %lu\n",num,rank,numbers.size());
+      phi();
       MPI_Send(&(numbers[num]),1,MPI_UNSIGNED_SHORT,0,0,MPI_COMM_WORLD);
     }
   }
