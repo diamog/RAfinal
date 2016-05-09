@@ -1,9 +1,11 @@
 #include <cassert>
 #include <cstdlib>
+#include "MersenneTwister.h"
 #include <iostream>
 #include <ctime>
 #include <cmath>
 #include <algorithm>
+#include <climits>
 #include "my_num.h"
 s_t nChoosek( s_t n, s_t k )
 {
@@ -59,28 +61,47 @@ int main(int argc,char* argv[]) {
   s_t N_unsorted = N-N_sorted;
 
   //Create list of unsorted elements
-  s_t* indices = new s_t[N_unsorted];
-  for (s_t i=0;i<N_unsorted;i++) {
-    indices[i] = rand()%(N_sorted+1);
-  }
-  std::sort(indices,indices+N_unsorted);
+  std::vector<store_t> numbers; // list of integers
+  int method=0;
+  MTRand rand;
+  if (argc>3)
+    method = atoi(argv[3]);
+  if (method!=3) {
+    s_t* indices = new s_t[N_unsorted];
+    for (s_t i=0;i<N_unsorted;i++) {
+      if (method==0) {//uniformly at random
+        indices[i] = floor(rand.rand53()*(N_sorted+1));
+      }
+      else if (method==1) //all at beginning
+        indices[i]=0;
+      else  {//Gaussian 
+        indices[i]=floor(rand.randNorm(.5,.5/4)*(N_sorted+1));
 
-  //Create alpha_in sorted list
-  std::vector<store_t> numbers;
-  s_t cur=0;
-  for (s_t i=0;i<N_sorted;i++) {
-    while (cur<N_unsorted&&indices[cur]<i) {
-      numbers.push_back((store_t)log(N_sorted)+1);
+      }
+    }
+    std::sort(indices,indices+N_unsorted);
+
+    //Create alpha_in sorted list
+    s_t cur=0;
+    for (s_t i=0;i<N_sorted;i++) {
+      while (cur<N_unsorted&&indices[cur]<i) {
+        numbers.push_back((store_t)log(N_sorted)+1);
+        cur++;
+      }
+      numbers.push_back((int)log(i+1));
+    }
+    while (cur<N_unsorted) {
+      numbers.push_back(0);
       cur++;
     }
-    numbers.push_back((int)log(i+1));
+    delete [] indices;
   }
-  while (cur<N_unsorted) {
-    numbers.push_back(0);
-    cur++;
+  else {
+    MTRand mtrand;
+    for (int i=0;i<N;i++) {
+      numbers.push_back(mtrand.rand(USHRT_MAX));
+    }
   }
-  delete [] indices;
-
   //continuously run tests until finished
   float alpha;
   int l;
@@ -98,7 +119,7 @@ int main(int argc,char* argv[]) {
     }
     std::cout<<"p* = "<<pstar<<'\n';
     std::cout<<"Computing p* took "<<(std::clock()-start_ps)/(double)CLOCKS_PER_SEC
-             <<"seconds\n";
+             <<" seconds\n";
 
     //Run the test
     std::clock_t start_running = std::clock();
@@ -114,7 +135,7 @@ int main(int argc,char* argv[]) {
       std::cout<<"YES\n";
     else
       std::cout<<"NO\n";
-    std::cout<<"Running algorithm took "<<(std::clock()-start_running)/(double)CLOCKS_PER_SEC<<"seconds\n";
+    std::cout<<"Running algorithm took "<<(std::clock()-start_running)/(double)CLOCKS_PER_SEC<<" seconds\n";
   
     //refresh for another run
     std::cout<<"Input l(0 to end): ";
